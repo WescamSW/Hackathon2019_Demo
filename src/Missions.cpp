@@ -4,6 +4,7 @@
  *  Created on: Feb 7, 2019
  *      Author: slascos
  */
+#include <iostream>
 #include <memory>
 #include <cmath>
 #include <thread>
@@ -15,7 +16,6 @@ using namespace std;
 using namespace wscDrone;
 
 // Global variables
-extern vector<shared_ptr<Semaphore>> g_stateSemaphores;
 extern vector<shared_ptr<Bebop2>> g_drones;
 
 // Create some helpful convenience aliases
@@ -30,38 +30,30 @@ constexpr int WAIT_LONG  = 10;
 
 void startDrone(int droneId)
 {
-    g_stateSemaphores[droneId] = g_drones[droneId]->getStateSemaphore();
 
     ControlPtr       control = g_drones[droneId]->getDroneController();
     CameraControlPtr camera  = g_drones[droneId]->getCameraControl();
     PilotPtr         pilot   = g_drones[droneId]->getPilot();
     VideoDriverPtr   video   = g_drones[droneId]->getVideoDriver();
 
-    if (droneId == 0) {
-        // Register callbacks for the Drone
-        g_drones[droneId]->registerVideoCallback(onFrameReceived0);
-    } else if (droneId == 1) {
-        g_drones[droneId]->registerVideoCallback(onFrameReceived1);
-    } else if (droneId == 2) {
-        g_drones[droneId]->registerVideoCallback(onFrameReceived2);
-    }
-
     control->start();
+    cout << "Done CONTROL START" << endl;
     waitSeconds(1);
     video->start();
+    cout << "Done VIDEO START" << endl;
     camera->setForward();
     waitSeconds(1);
+    cout << "Done drone start" << endl;
 }
 
 void takeoffDrone(int droneId) {
-    g_stateSemaphores[droneId] = g_drones[droneId]->getStateSemaphore();
 
     ControlPtr       control = g_drones[droneId]->getDroneController();
     CameraControlPtr camera  = g_drones[droneId]->getCameraControl();
     PilotPtr         pilot   = g_drones[droneId]->getPilot();
     VideoDriverPtr   video   = g_drones[droneId]->getVideoDriver();
     g_drones[droneId]->getPilot()->takeOff();
-    waitSeconds(3);
+    //waitSeconds(3);
 }
 
 void landDrone(int droneId)
@@ -69,7 +61,7 @@ void landDrone(int droneId)
     // Mission shutdown
     g_drones[droneId]->getCameraControl()->setForward();
     g_drones[droneId]->getPilot()->land();
-    waitSeconds(5);
+    //waitSeconds(5);
 }
 
 void stopDrone(int droneId)
@@ -98,18 +90,19 @@ void mission1(int droneId)
     CameraControlPtr camera  = g_drones[droneId]->getCameraControl();
     PilotPtr         pilot   = g_drones[droneId]->getPilot();
     VideoDriverPtr   video   = g_drones[droneId]->getVideoDriver();
+//
+//    camera->setTiltPan(17.0f, 45.0f); // Look up and to the right
+//    waitSeconds(5);
+//    camera->setTiltPan(-17.0f, -45.0f); // Look down and to the left
+//    waitSeconds(5);
+//    camera->setForward();
+//    waitSeconds(5);
 
-    waitSeconds(5);
-    camera->setTiltPan(17.0f, 45.0f); // Look up and to the right
-    waitSeconds(5);
-    camera->setTiltPan(-17.0f, -45.0f); // Look down and to the left
-    waitSeconds(5);
-    camera->setForward();
-    waitSeconds(5);
-    pilot->moveRelativeMetres(1.0, 0.00, 0.0); // Move forward 1 metre
-    waitSeconds(5);
-    pilot->moveRelativeMetres(-1.0, 0.0, 0.0); // move backward 1 meter
-    waitSeconds(5);
+    pilot->moveRelativeMetres(2.0, 0.00, 0.0); // Move forward 1 metre
+    pilot->moveRelativeMetres(-2.0, 0.0, 0.0); // move backward 1 meter
+
+    pilot->moveRelativeMetres(0,  2.0, 0.0); // Move forward 1 metre
+    pilot->moveRelativeMetres(0, -2.0, 0.0); // move backward 1 meter
 }
 
 // Move in a 10-metre square pattern, turning such that drone is always facing inwards,

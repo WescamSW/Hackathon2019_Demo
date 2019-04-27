@@ -52,7 +52,6 @@ SYS_LIB += -L$(OPENCV)/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lope
 
 COMMON_SRC = \
       src/Missions.cpp \
-      src/VideoCallback.cpp \
       src/VideoOpenCV.cpp 
 
 SWARM_SRC = src/Bebop2Swarm.cpp
