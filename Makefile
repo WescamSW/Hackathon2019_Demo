@@ -47,7 +47,7 @@ SYS_LIB += -lwscDrone -larsal -larcommands -lardiscovery -larcontroller -larmedi
 SYS_LIB += -lpthread -lrtsp -lsdp -lmux -lpomp -ljson-c -lulog -lfutils
 
 # for opencv
-SYS_INC += -I$(OPENCV)/include/opencv4/
+SYS_INC += -I$(OPENCV)/include/opencv4/ -I$(OPENCV)/include/
 SYS_LIB += -L$(OPENCV)/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_dnn
 
 COMMON_SRC = \
