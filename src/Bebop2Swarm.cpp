@@ -63,15 +63,7 @@ int main(int argc, char **argv)
         	startDrone(droneId);
     }
 
-//    //Here we can start a thread that will process the video using opencv calls
-//    int droneId = 0;
-//
-//    takeoffDrone(droneId);
-//    for (int i=0; i<4; i++) {
-//      mission1(droneId);
-//    }
-//    //waitSeconds(30);
-//    landDrone(droneId);
+    //missionDance();
 
     while(true) {}
     exit(0);
@@ -134,7 +126,8 @@ void openCVKeyCallbacks(const int key)
     case 32:   // spacebar - LAND ALL DRONES
         {
             for (unsigned droneId=0; droneId<g_drones.size(); droneId++) {
-                stopDrone(droneId);
+                //stopDrone(droneId);
+                g_drones[droneId]->getPilot()->land();
             }
         }
         break;
@@ -258,7 +251,7 @@ std::thread launchDisplayThread()
                     if (processingDone == true) {  // only start a new frame when the old one is done
 
                         if (!processingImagePtr->empty()) {
-                            cv::imshow("PROCESSING", *processingImagePtr); // Send the processed image to the window, dereference the pointer to get the Mat object
+
                         }
                         processingDone = false;  // clear the flag
                         *processingImagePtr = imageBGR; // update to use the newly captured frame
@@ -269,6 +262,7 @@ std::thread launchDisplayThread()
                 }
             }
 
+            cv::imshow("PROCESSING", *processingImagePtr); // Send the processed image to the window, dereference the pointer to get the Mat object
             cv::imshow("VIDEO Streaming", streamingImage);
             keypress = cv::waitKey(1);
             openCVKeyCallbacks(keypress);

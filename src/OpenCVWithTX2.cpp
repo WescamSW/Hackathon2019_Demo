@@ -93,10 +93,6 @@ std::thread launchDisplayThread()
                 //-- Perform primary image processing. With complex algorithms, this likely won't be able to keep up
 				// with streaming video so it will run at a lower rate.
 				if (processingDone == true) {  // only start a new frame when the old one is done
-
-					if (!processingImagePtr->empty()) {
-						cv::imshow("PROCESSING", *processingImagePtr); // Send the processed image to the window, dereference the pointer to get the Mat object
-					}
                     processingDone = false;  // clear the flag
                     *processingImagePtr = capturedFrame; // update to use the newly captured frame
                     std::thread procThread(openCVProcessing, processingImagePtr, &processingDone); // Launch a new thread
@@ -104,6 +100,9 @@ std::thread launchDisplayThread()
 				}
             }
 
+            //if (!processingImagePtr->empty()) {
+                cv::imshow("PROCESSING", *processingImagePtr); // Send the processed image to the window, dereference the pointer to get the Mat object
+            //}
             cv::imshow("VIDEO Streaming", streamingImage); // Send the streaming image to the window
 
             keypress = cv::waitKey(1); // update the display

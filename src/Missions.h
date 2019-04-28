@@ -26,4 +26,7 @@ void missionTriange(int droneId);
 void missionLookVertical(int droneId);
 void missionLookHorizontal(int droneId);
 
+void missionDance();
+void missionDance2();
+
 #endif /* SRC_MISSIONS_H_ */

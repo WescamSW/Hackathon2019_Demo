@@ -28,6 +28,12 @@ constexpr int WAIT_SHORT = 5;
 constexpr int WAIT_MED   = 7;
 constexpr int WAIT_LONG  = 10;
 
+void changeAltitude(int droneId, float heightMeters)
+{
+    PilotPtr pilot   = g_drones[droneId]->getPilot();
+    pilot->moveRelativeMetres(0.0, 0.0, -heightMeters);
+}
+
 void startDrone(int droneId)
 {
 
@@ -74,12 +80,81 @@ void stopDrone(int droneId)
     g_drones[droneId]->getDroneController()->stop();
 }
 
+void missionDance2()
+{
+
+    takeoffDrone(0);
+    takeoffDrone(1);
+    //takeoffDrone(2);
+
+    thread alpha, bravo, charlie;
+
+    alpha   = thread(mission1, 0);
+    bravo   = thread(mission1, 1);
+    //charlie = thread(mission1, 2);
+
+    if (alpha.joinable())   { alpha.join(); }
+    if (bravo.joinable())   { bravo.join(); }
+   // if (charlie.joinable()) { charlie.join(); }
+
+    landDrone(0);
+    landDrone(1);
+  //  landDrone(2);
+
+}
+
+void missionDance()
+{
+    const float STEP_DISTANCE = 2.0f;
+    const float TURN_ANGLE =  -120.0f;
+
+    takeoffDrone(0);
+    takeoffDrone(1);
+    //takeoffDrone(2);
+
+    thread alpha, bravo, charlie;
+
+    alpha   = thread(missionTriange, 0);
+    bravo   = thread(missionTriange, 1);
+    //charlie = thread(missionTriange, 2);
+
+    if (alpha.joinable())   { alpha.join(); }
+    if (bravo.joinable())   { bravo.join(); }
+    //if (charlie.joinable()) { charlie.join(); }
+
+
+    // Align drones
+    alpha = thread( [&](){
+        g_drones[0]->getPilot()->moveRelativeMetres(STEP_DISTANCE, STEP_DISTANCE, -2.0f);
+        g_drones[0]->getPilot()->setHeading(2*TURN_ANGLE);
+    } );
+    bravo = thread( [&](){
+        g_drones[1]->getPilot()->moveRelativeMetres(0, STEP_DISTANCE, -1.0f);
+        g_drones[1]->getPilot()->setHeading(TURN_ANGLE);
+    } );
+
+    if (alpha.joinable())   { alpha.join(); }
+    if (bravo.joinable())   { bravo.join(); }
+
+    // Run the triangle again
+    alpha   = thread(missionTriange, 0);
+    bravo   = thread(missionTriange, 1);
+    //charlie = thread(missionTriange, 2);
+
+    if (alpha.joinable())   { alpha.join(); }
+    if (bravo.joinable())   { bravo.join(); }
+    //if (charlie.joinable()) { charlie.join(); }
+
+}
+
+
+
 void setFlightAltitude(int droneId, float heightMeters)
 {
     PilotPtr         pilot   = g_drones[droneId]->getPilot();
-    const int WAIT_TIME = WAIT_MED;
-    waitSeconds(WAIT_SHORT);
-    pilot->moveRelativeMetres(0.0, 0.0, -heightMeters); waitSeconds(WAIT_TIME);
+    const int WAIT_TIME = 0;
+    //waitSeconds(WAIT_SHORT);
+    pilot->moveRelativeMetres(0.0, 0.0, -heightMeters);
 }
 
 // Look around with the camera, then move forward 1 metre, than back 1 metre.
@@ -101,8 +176,8 @@ void mission1(int droneId)
     pilot->moveRelativeMetres(2.0, 0.00, 0.0); // Move forward 1 metre
     pilot->moveRelativeMetres(-2.0, 0.0, 0.0); // move backward 1 meter
 
-    pilot->moveRelativeMetres(0,  2.0, 0.0); // Move forward 1 metre
-    pilot->moveRelativeMetres(0, -2.0, 0.0); // move backward 1 meter
+    //pilot->moveRelativeMetres(0,  2.0, 0.0); // Move forward 1 metre
+    //pilot->moveRelativeMetres(0, -2.0, 0.0); // move backward 1 meter
 }
 
 // Move in a 10-metre square pattern, turning such that drone is always facing inwards,
@@ -159,8 +234,8 @@ void missionTriange(int droneId)
 {
     PilotPtr         pilot   = g_drones[droneId]->getPilot();
 
-    const int WAIT_TIME = 10;
-    const float STEP_DISTANCE = 4.0f;
+    const int WAIT_TIME = 0;
+    const float STEP_DISTANCE = 2.0f;
     const float TURN_ANGLE =  -120.0f;
     //waitSeconds(WAIT_SHORT);
 
