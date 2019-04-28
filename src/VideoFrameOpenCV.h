@@ -8,9 +8,8 @@
 #ifndef SRC_VIDEOOPENCV_H_
 #define SRC_VIDEOOPENCV_H_
 
-#include <memory>
-#include <thread>
-#include <opencv2/core.hpp>
+#include <memory> // for shared_ptr
+#include <opencv2/core/mat.hpp>
 #include "wscDrone/VideoFrame.h"
 
 class VideoFrameOpenCV : public VideoFrame {
@@ -25,12 +24,8 @@ public:
 
     char *getRawPointer() override;
     size_t getFrameSizeBytes() override;
-    void justDisplay();
     std::shared_ptr<cv::Mat> getFrame() { return m_frame; }
 
-    // Derived Class functions
-
-    static std::shared_ptr<std::thread> launchDisplayThread();
 private:
     std::shared_ptr<cv::Mat> m_frame = nullptr;
 };

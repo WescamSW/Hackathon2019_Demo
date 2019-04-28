@@ -34,6 +34,7 @@ AR = $(TOOL_PREFIX)ar
 LD = $(TOOL_PREFIX)ld
 
 SWARM = bebop2Swarm_$(ARCH)
+TX2   = OpenCVWithTX2_$(ARCH)
 
 FLAGS += -std=c++14 -Wall -pedantic -O2 -Wno-deprecated-declarations
 LOC_INC = -I$(DISTDIR)/$(PREFIX)/include -I$(ARSDK3)/include
@@ -44,21 +45,31 @@ SYS_LIB = -L/usr/local/lib
 
 # for Bebop2 SDK and wscDrone
 SYS_LIB += -lwscDrone -larsal -larcommands -lardiscovery -larcontroller -larmedia -larnetwork -larnetworkal -larstream -larstream2
+SYS_LIB += -lavcodec -lavformat -lswscale
+#SYS_LIB += -lwscDrone
 SYS_LIB += -lpthread -lrtsp -lsdp -lmux -lpomp -ljson-c -lulog -lfutils
 
 # for opencv
 SYS_INC += -I$(OPENCV)/include/opencv4/ -I$(OPENCV)/include/
-SYS_LIB += -L$(OPENCV)/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_dnn
+SYS_LIB += -L$(OPENCV)/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_dnn -lopencv_videoio
 
 COMMON_SRC = \
-      src/Missions.cpp \
-      src/VideoOpenCV.cpp 
+      src/VideoFrameOpenCV.cpp \
+      src/OpenCVProcessing.cpp
 
-SWARM_SRC = src/Bebop2Swarm.cpp
+SWARM_SRC = src/Bebop2Swarm.cpp \
+      src/Missions.cpp
 
-all: directories deps
+TX2_SRC = src/OpenCVWithTX2.cpp
+
+all: swarm tx2
+	
+swarm: directories deps
 	${CC} ${FLAGS} -o ${SWARM} ${SWARM_SRC} ${COMMON_SRC} ${SYS_INC} ${LOC_INC} ${LOC_LIB} ${SYS_LIB}
 
+tx2: directories deps
+	${CC} ${FLAGS} -o ${TX2} ${TX2_SRC} ${COMMON_SRC} ${SYS_INC} ${LOC_INC} ${LOC_LIB} ${SYS_LIB}
+	
 directories:
 	mkdir -p $(OUTPUT_DIRS)
 
