@@ -31,7 +31,7 @@ constexpr int WAIT_LONG  = 10;
 void changeAltitude(int droneId, float heightMeters)
 {
     PilotPtr pilot   = g_drones[droneId]->getPilot();
-    pilot->moveRelativeMetres(0.0, 0.0, -heightMeters);
+    pilot->moveRelativeMetresRestricted(0.0, 0.0, -heightMeters);
 }
 
 void startDrone(int droneId)
@@ -59,7 +59,6 @@ void takeoffDrone(int droneId) {
     PilotPtr         pilot   = g_drones[droneId]->getPilot();
     VideoDriverPtr   video   = g_drones[droneId]->getVideoDriver();
     g_drones[droneId]->getPilot()->takeOff();
-    //waitSeconds(3);
 }
 
 void landDrone(int droneId)
@@ -67,7 +66,6 @@ void landDrone(int droneId)
     // Mission shutdown
     g_drones[droneId]->getCameraControl()->setForward();
     g_drones[droneId]->getPilot()->land();
-    //waitSeconds(5);
 }
 
 void stopDrone(int droneId)
@@ -125,11 +123,11 @@ void missionDance()
 
     // Align drones
     alpha = thread( [&](){
-        g_drones[0]->getPilot()->moveRelativeMetres(STEP_DISTANCE, STEP_DISTANCE, -2.0f);
+        g_drones[0]->getPilot()->moveRelativeMetresRestricted(STEP_DISTANCE, STEP_DISTANCE, -2.0f);
         g_drones[0]->getPilot()->setHeading(2*TURN_ANGLE);
     } );
     bravo = thread( [&](){
-        g_drones[1]->getPilot()->moveRelativeMetres(0, STEP_DISTANCE, -1.0f);
+        g_drones[1]->getPilot()->moveRelativeMetresRestricted(0, STEP_DISTANCE, -1.0f);
         g_drones[1]->getPilot()->setHeading(TURN_ANGLE);
     } );
 
@@ -152,9 +150,7 @@ void missionDance()
 void setFlightAltitude(int droneId, float heightMeters)
 {
     PilotPtr         pilot   = g_drones[droneId]->getPilot();
-    const int WAIT_TIME = 0;
-    //waitSeconds(WAIT_SHORT);
-    pilot->moveRelativeMetres(0.0, 0.0, -heightMeters);
+    pilot->moveRelativeMetresRestricted(0.0, 0.0, -heightMeters);
 }
 
 // Look around with the camera, then move forward 1 metre, than back 1 metre.
@@ -173,11 +169,11 @@ void mission1(int droneId)
 //    camera->setForward();
 //    waitSeconds(5);
 
-    pilot->moveRelativeMetres(2.0, 0.00, 0.0); // Move forward 1 metre
-    pilot->moveRelativeMetres(-2.0, 0.0, 0.0); // move backward 1 meter
+    pilot->moveRelativeMetresRestricted(2.0, 0.00, 0.0); // Move forward 1 metre
+    pilot->moveRelativeMetresRestricted(-2.0, 0.0, 0.0); // move backward 1 meter
 
-    //pilot->moveRelativeMetres(0,  2.0, 0.0); // Move forward 1 metre
-    //pilot->moveRelativeMetres(0, -2.0, 0.0); // move backward 1 meter
+    //pilot->moveRelativeMetresRestricted(0,  2.0, 0.0); // Move forward 1 metre
+    //pilot->moveRelativeMetresRestricted(0, -2.0, 0.0); // move backward 1 meter
 }
 
 // Move in a 10-metre square pattern, turning such that drone is always facing inwards,
@@ -194,16 +190,16 @@ void missionBox(int droneId)
 
     const int WAIT_TIME = 10;
     waitSeconds(WAIT_SHORT);
-    pilot->moveRelativeMetres(0.0, 0.0, -2.5); waitSeconds(WAIT_TIME);  // More up 2.5 meters
-    pilot->moveRelativeMetres(0.0, HALF_STEP, 0.0);  waitSeconds(WAIT_TIME); // Move right 5 metres
+    pilot->moveRelativeMetresRestricted(0.0, 0.0, -2.5); waitSeconds(WAIT_TIME);  // More up 2.5 meters
+    pilot->moveRelativeMetresRestricted(0.0, HALF_STEP, 0.0);  waitSeconds(WAIT_TIME); // Move right 5 metres
     pilot->setHeading(LEFT_90_DEGREES);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
-    pilot->moveRelativeMetres(0.0, STEP, 0.0); waitSeconds(WAIT_TIME); // Move right 10 metre
+    pilot->moveRelativeMetresRestricted(0.0, STEP, 0.0); waitSeconds(WAIT_TIME); // Move right 10 metre
     pilot->setHeading(LEFT_90_DEGREES);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
-    pilot->moveRelativeMetres(0.0, STEP, 0.0); waitSeconds(WAIT_TIME); // Move right 10 metre
+    pilot->moveRelativeMetresRestricted(0.0, STEP, 0.0); waitSeconds(WAIT_TIME); // Move right 10 metre
     pilot->setHeading(LEFT_90_DEGREES);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
-    pilot->moveRelativeMetres(0.0, STEP, 0.0); waitSeconds(WAIT_TIME); // Move right 10 metre
+    pilot->moveRelativeMetresRestricted(0.0, STEP, 0.0); waitSeconds(WAIT_TIME); // Move right 10 metre
     pilot->setHeading(LEFT_90_DEGREES);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
-    pilot->moveRelativeMetres(0.0, HALF_STEP, 0.0);  waitSeconds(WAIT_TIME); // Move right 5 metres
+    pilot->moveRelativeMetresRestricted(0.0, HALF_STEP, 0.0);  waitSeconds(WAIT_TIME); // Move right 5 metres
 }
 
 void missionBoxInv(int droneId)
@@ -218,16 +214,16 @@ void missionBoxInv(int droneId)
     const float HALF_STEP = 2.0f;
 
     waitSeconds(WAIT_SHORT);
-    pilot->moveRelativeMetres(0.0, 0.0, -1.0); waitSeconds(WAIT_TIME);  // More up 2.5 meters
-    pilot->moveRelativeMetres(0.0, -HALF_STEP, 0.0);  waitSeconds(WAIT_TIME); // Move left 5 metres
+    pilot->moveRelativeMetresRestricted(0.0, 0.0, -1.0); waitSeconds(WAIT_TIME);  // More up 2.5 meters
+    pilot->moveRelativeMetresRestricted(0.0, -HALF_STEP, 0.0);  waitSeconds(WAIT_TIME); // Move left 5 metres
     pilot->setHeading(RIGHT_90_DEGREES);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
-    pilot->moveRelativeMetres(0.0, -STEP, 0.0); waitSeconds(WAIT_TIME); // Move left 10 metre
+    pilot->moveRelativeMetresRestricted(0.0, -STEP, 0.0); waitSeconds(WAIT_TIME); // Move left 10 metre
     pilot->setHeading(RIGHT_90_DEGREES);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
-    pilot->moveRelativeMetres(0.0, -STEP, 0.0); waitSeconds(WAIT_TIME); // Move left 10 metre
+    pilot->moveRelativeMetresRestricted(0.0, -STEP, 0.0); waitSeconds(WAIT_TIME); // Move left 10 metre
     pilot->setHeading(RIGHT_90_DEGREES);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
-    pilot->moveRelativeMetres(0.0, -STEP, 0.0); waitSeconds(WAIT_TIME); // Move left 10 metre
+    pilot->moveRelativeMetresRestricted(0.0, -STEP, 0.0); waitSeconds(WAIT_TIME); // Move left 10 metre
     pilot->setHeading(RIGHT_90_DEGREES);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
-    pilot->moveRelativeMetres(0.0, -HALF_STEP, 0.0);  waitSeconds(WAIT_TIME); // Move left 5 metres
+    pilot->moveRelativeMetresRestricted(0.0, -HALF_STEP, 0.0);  waitSeconds(WAIT_TIME); // Move left 5 metres
 }
 
 void missionTriange(int droneId)
@@ -239,11 +235,11 @@ void missionTriange(int droneId)
     const float TURN_ANGLE =  -120.0f;
     //waitSeconds(WAIT_SHORT);
 
-    pilot->moveRelativeMetres(0.0, STEP_DISTANCE, 0.0);  waitSeconds(WAIT_TIME); // Move right 5 metres
+    pilot->moveRelativeMetresRestricted(0.0, STEP_DISTANCE, 0.0);  waitSeconds(WAIT_TIME); // Move right 5 metres
     pilot->setHeading(TURN_ANGLE);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
-    pilot->moveRelativeMetres(0.0, STEP_DISTANCE, 0.0); waitSeconds(WAIT_TIME); // Move left 10 metre
+    pilot->moveRelativeMetresRestricted(0.0, STEP_DISTANCE, 0.0); waitSeconds(WAIT_TIME); // Move left 10 metre
     pilot->setHeading(TURN_ANGLE);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
-    pilot->moveRelativeMetres(0.0, STEP_DISTANCE, 0.0); waitSeconds(WAIT_TIME); // Move left 10 metre
+    pilot->moveRelativeMetresRestricted(0.0, STEP_DISTANCE, 0.0); waitSeconds(WAIT_TIME); // Move left 10 metre
     pilot->setHeading(TURN_ANGLE);             waitSeconds(WAIT_TIME); // rotate counter-clockwise 90
 }
 
@@ -256,11 +252,11 @@ void missionTForward(int droneId)
     VideoDriverPtr   video   = g_drones[droneId]->getVideoDriver();
 
     waitSeconds(WAIT_SHORT);
-    pilot->moveRelativeMetres(10.0, 0.0, 0.0); waitSeconds(WAIT_LONG); // More forward 10
-    pilot->moveRelativeMetres(0.0, 2.0, 0.0);  waitSeconds(WAIT_LONG); // move right 2
-    pilot->moveRelativeMetres(0.0, -4.0, 0.0); waitSeconds(WAIT_LONG); // Move left 4
-    pilot->moveRelativeMetres(0.0, 2.0, 0.0);  waitSeconds(WAIT_LONG); // Move right 2
-    pilot->moveRelativeMetres(-10.0, 0.0, 0.0); waitSeconds(WAIT_LONG); // More back 10
+    pilot->moveRelativeMetresRestricted(10.0, 0.0, 0.0); waitSeconds(WAIT_LONG); // More forward 10
+    pilot->moveRelativeMetresRestricted(0.0, 2.0, 0.0);  waitSeconds(WAIT_LONG); // move right 2
+    pilot->moveRelativeMetresRestricted(0.0, -4.0, 0.0); waitSeconds(WAIT_LONG); // Move left 4
+    pilot->moveRelativeMetresRestricted(0.0, 2.0, 0.0);  waitSeconds(WAIT_LONG); // Move right 2
+    pilot->moveRelativeMetresRestricted(-10.0, 0.0, 0.0); waitSeconds(WAIT_LONG); // More back 10
 }
 
 // Follow a T pattern, by turning such that all movements are forward orientation
@@ -272,16 +268,16 @@ void missionTTurn(int droneId)
     VideoDriverPtr   video   = g_drones[droneId]->getVideoDriver();
 
     waitSeconds(WAIT_LONG);
-    pilot->moveRelativeMetres(0.0, 0.0, -0.5); waitSeconds(WAIT_LONG);  // More up 2.5 meters
-    pilot->moveRelativeMetres(10.0, 0.0, 0.0); waitSeconds(WAIT_LONG);  // More forward 10
+    pilot->moveRelativeMetresRestricted(0.0, 0.0, -0.5); waitSeconds(WAIT_LONG);  // More up 2.5 meters
+    pilot->moveRelativeMetresRestricted(10.0, 0.0, 0.0); waitSeconds(WAIT_LONG);  // More forward 10
     pilot->setHeading(RIGHT_90_DEGREES); waitSeconds(WAIT_LONG);            // rotate clockwise 90
-    pilot->moveRelativeMetres(2.0, 0.0, 0.0);  waitSeconds(WAIT_LONG);  // move forward 2
+    pilot->moveRelativeMetresRestricted(2.0, 0.0, 0.0);  waitSeconds(WAIT_LONG);  // move forward 2
     pilot->setHeading(RIGHT_180_DEGREES); waitSeconds(WAIT_LONG);                 // rotate clockwise 180
-    pilot->moveRelativeMetres(4.0, 0.0, 0.0); waitSeconds(WAIT_LONG);  // Move forward 4
+    pilot->moveRelativeMetresRestricted(4.0, 0.0, 0.0); waitSeconds(WAIT_LONG);  // Move forward 4
     pilot->setHeading(LEFT_180_DEGREES); waitSeconds(WAIT_LONG);                 // rotate counterclockwise 180
-    pilot->moveRelativeMetres(2.0, 0.0, 0.0);  waitSeconds(WAIT_LONG);  // move forward 2
+    pilot->moveRelativeMetresRestricted(2.0, 0.0, 0.0);  waitSeconds(WAIT_LONG);  // move forward 2
     pilot->setHeading(RIGHT_90_DEGREES); waitSeconds(WAIT_SHORT);            // rotate clockwise 90
-    pilot->moveRelativeMetres(10.0, 0.0, 0.0); waitSeconds(WAIT_LONG); // More forward 10
+    pilot->moveRelativeMetresRestricted(10.0, 0.0, 0.0); waitSeconds(WAIT_LONG); // More forward 10
     pilot->setHeading(RIGHT_180_DEGREES); waitSeconds(WAIT_LONG);                 // rotate clockwise 180
 }
 
@@ -296,11 +292,11 @@ void missionTurnBack(int droneId)
     VideoDriverPtr   video   = g_drones[droneId]->getVideoDriver();
 
     waitSeconds(WAIT_SHORT);
-    pilot->moveRelativeMetres(10.0, 0.0, 0.0); // Move forward 10 meteres
+    pilot->moveRelativeMetresRestricted(10.0, 0.0, 0.0); // Move forward 10 meteres
     waitSeconds(WAIT_MED);
     pilot->setHeading(RIGHT_180_DEGREES);
     waitSeconds(WAIT_MED);
-    pilot->moveRelativeMetres(10.0, 0.0, 0.0); // Move right 5 metres
+    pilot->moveRelativeMetresRestricted(10.0, 0.0, 0.0); // Move right 5 metres
     waitSeconds(WAIT_MED);
     pilot->setHeading(LEFT_180_DEGREES);
     waitSeconds(WAIT_MED);
