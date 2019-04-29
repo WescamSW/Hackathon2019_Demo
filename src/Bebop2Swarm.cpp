@@ -4,6 +4,7 @@
  *  Created on: Feb 1, 2019
  *      Author: slascos
  */
+#include <cstdlib> // for system()
 #include <unistd.h>
 #include <iostream>
 #include <thread>
@@ -120,71 +121,6 @@ void initDrones(vector<string> callsigns) {
     }
 }
 
-void openCVKeyCallbacks(const int key)
-{
-    switch(key) {
-    case 32:   // spacebar - LAND ALL DRONES
-        {
-            for (unsigned droneId=0; droneId<g_drones.size(); droneId++) {
-                //stopDrone(droneId);
-                g_drones[droneId]->getPilot()->land();
-            }
-        }
-        break;
-    case 49:   // 1
-        droneUnderManualControl = 0;
-        break;
-    case 50:   // 2
-        if (g_drones.size() >= 2) {
-            droneUnderManualControl = 1;
-        }
-        break;
-    case 51:   // 3
-        if (g_drones.size() >= 3) {
-            droneUnderManualControl = 2;
-        }
-        break;
-    case 116: // 't'
-        cout << "MANUAL: Taking off!" << endl;
-        g_drones[droneUnderManualControl]->getPilot()->takeOff();
-        break;
-    case 108: // 't'
-        cout << "MANUAL: Landing!" << endl;
-        g_drones[droneUnderManualControl]->getPilot()->land();
-        break;
-    case 81:   // left arrow
-        cout << "MANUAL: Left!" << endl;
-        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::LEFT);
-        break;
-    case 82:
-        // up arrow
-        cout << "MANUAL: Forward!" << endl;
-        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::FORWARD);
-        break;
-    case 83:   // right arrow
-        cout << "MANUAL: Right!" << endl;
-        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::RIGHT);
-        break;
-    case 84:   // down arrow
-        cout << "MANUAL: Down!" << endl;
-        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::BACK);
-        break;
-    case 43: // numeric "+"
-        cout << "MANUAL: Asending!" << endl;
-        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::UP);
-        break;
-    case 45 : // numeric "-"
-        cout << "MANUAL: Descending!" << endl;
-        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::DOWN);
-        break;
-    default:
-        if (key > 0) {
-            cout << "Unknown key pressed: " << key << endl;
-        }
-        break;
-    }
-}
-
 // Create a function to launch the display thread
 std::thread launchDisplayThread()
 {
@@ -270,4 +206,95 @@ std::thread launchDisplayThread()
     }
     );
     return displayThreadPtr;
+}
+
+
+void openCVKeyCallbacks(const int key)
+{
+    switch(key) {
+
+    case 112: // P - Take a picture with the selected drone
+    {
+        cout << "Taking a picture with drone " << droneUnderManualControl << endl;
+        g_drones[droneUnderManualControl]->getCameraControl()->capturePhoto();
+        waitSeconds(1);
+        string ipAddress = g_drones[droneUnderManualControl]->getIpAddress();
+        ostringstream command;
+        command << "wget -r --no-parent -nc -A '*.dng,*.jpg' -P ./drone_" <<  droneUnderManualControl;
+        command << " -nd ftp://" << ipAddress << "/internal_000/Bebop_2/media/";
+        cout << "Sending command: " << command.str() << endl;
+        int ret = system(command.str().c_str()); // Send the command to a shell to execute
+        if (ret != 0) { cout << "ERROR: returned " << ret << endl; }
+        break;
+    }
+    case 32 :   // spacebar - LAND ALL DRONES
+        {
+            cout << "LANDING ALL DRONES!!!" << endl;
+            for (unsigned droneId=0; droneId<g_drones.size(); droneId++) {
+                //stopDrone(droneId);
+                g_drones[droneId]->getPilot()->land();
+            }
+        }
+        break;
+
+    case 201: // F12 KEY - EMERGENCY MOTOR CUT: THE DRONES WILL FALL!!!!
+        cout << "EMERGENCY MOTOR CUTS!!! DRONES WILL FALL!!!" << endl;
+        for (unsigned droneId=0; droneId<g_drones.size(); droneId++) {
+            //stopDrone(droneId);
+            g_drones[droneId]->getPilot()->CUT_THE_MOTORS();
+        }
+        break;
+
+    case 49:   // 1
+        droneUnderManualControl = 0;
+        break;
+    case 50:   // 2
+        if (g_drones.size() >= 2) {
+            droneUnderManualControl = 1;
+        }
+        break;
+    case 51:   // 3
+        if (g_drones.size() >= 3) {
+            droneUnderManualControl = 2;
+        }
+        break;
+    case 116: // 't'
+        cout << "MANUAL: Taking off!" << endl;
+        g_drones[droneUnderManualControl]->getPilot()->takeOff();
+        break;
+    case 108: // 't'
+        cout << "MANUAL: Landing!" << endl;
+        g_drones[droneUnderManualControl]->getPilot()->land();
+        break;
+    case 81:   // left arrow
+        cout << "MANUAL: Left!" << endl;
+        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::LEFT);
+        break;
+    case 82:
+        // up arrow
+        cout << "MANUAL: Forward!" << endl;
+        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::FORWARD);
+        break;
+    case 83:   // right arrow
+        cout << "MANUAL: Right!" << endl;
+        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::RIGHT);
+        break;
+    case 84:   // down arrow
+        cout << "MANUAL: Down!" << endl;
+        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::BACK);
+        break;
+    case 43: // numeric "+"
+        cout << "MANUAL: Asending!" << endl;
+        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::UP);
+        break;
+    case 45 : // numeric "-"
+        cout << "MANUAL: Descending!" << endl;
+        g_drones[droneUnderManualControl]->getPilot()->moveDirection(MoveDirection::DOWN);
+        break;
+    default:
+        if (key > 0) {
+            cout << "Unknown key pressed: " << key << endl;
+        }
+        break;
+    }
 }
