@@ -228,20 +228,24 @@ void openCVKeyCallbacks(const int key)
         shouldExit = true;
         break;
 
-    case 112: // P - Take a picture with the selected drone
+case 112: // P - Take a picture with the selected drone, the download on a separate thread
     {
-        cout << "Taking a picture with drone " << droneUnderManualControl << endl;
         g_drones[droneUnderManualControl]->getCameraControl()->capturePhoto();
-        waitSeconds(1);
-        string ipAddress = g_drones[droneUnderManualControl]->getIpAddress();
-        ostringstream command;
-        command << "wget -r --no-parent -nc -A '*.dng,*.jpg' -P ./drone_" <<  droneUnderManualControl;
-        command << " -nd ftp://" << ipAddress << "/internal_000/Bebop_2/media/";
-        cout << "Sending command: " << command.str() << endl;
-        int ret = system(command.str().c_str()); // Send the command to a shell to execute
-        if (ret != 0) { cout << "ERROR: returned " << ret << endl; }
+
+        std::thread download(
+                []() {
+            string ipAddress = g_drones[droneUnderManualControl]->getIpAddress();
+            ostringstream command;
+            command << "wget -r --no-parent -nc -A '*.dng,*.jpg' -P ./drone_" <<  droneUnderManualControl;
+            command << " -nd ftp://" << ipAddress << "/internal_000/Bebop_2/media/";
+            cout << "Sending command: " << command.str() << endl;
+            int ret = system(command.str().c_str()); // Send the command to a shell to execute
+            if (ret != 0) { cout << "DOWNLOAD ERROR: returned " << ret << endl; }
+        });
+        download.detach();
         break;
     }
+
 
     case 32 :   // spacebar - LAND ALL DRONES
         {
@@ -258,6 +262,12 @@ void openCVKeyCallbacks(const int key)
             //stopDrone(droneId);
             g_drones[droneId]->getPilot()->CUT_THE_MOTORS();
         }
+        break;
+    case 118: // 'v'
+        // restart the video pipeline
+        g_drones[droneUnderManualControl]->getVideoDriver()->stop();
+        waitSeconds(5);
+        g_drones[droneUnderManualControl]->getVideoDriver()->start();
         break;
 
     case 49:   // 1
