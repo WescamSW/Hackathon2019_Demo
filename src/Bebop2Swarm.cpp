@@ -27,6 +27,8 @@ using VideoFrameGeneric = VideoFrameOpenCV;
 using namespace std;
 using namespace wscDrone;
 
+#define NO_FLIGHT // uncomment thus to allow the drones to fly in this demo
+
 // 'using' permits us to use things like 'Mat' instead of 'cv::Mat' all the time
 using cv::Mat;
 using cv::Rect;
@@ -76,6 +78,9 @@ int main(int argc, char **argv)
         	startDrone(droneId);
     }
 
+// If NO_FLIGHT is defined, the drones will not take off. This is helpful just to test
+// video and move the drones around manually by hand.
+#ifndef NO_FLIGHT
 
     // In order to get drones to do things simaltaneously, they need their own threads.
     // Both Alpha and Bravo will take off, execute mission1(), then land at the same time.
@@ -95,6 +100,7 @@ int main(int argc, char **argv)
     // Wait for threads to complete
     if (alphaThread.joinable()) { alphaThread.join(); }
     if (bravoThread.joinable()) { bravoThread.join(); }
+#endif
 
     if (displayThread.joinable()) { displayThread.join(); }
     return EXIT_SUCCESS;
