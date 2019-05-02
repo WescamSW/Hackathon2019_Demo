@@ -33,8 +33,8 @@ CC = $(TOOL_PREFIX)g++
 AR = $(TOOL_PREFIX)ar
 LD = $(TOOL_PREFIX)ld
 
-SWARM = bebop2Swarm_$(ARCH)
-TX2   = OpenCVWithTX2_$(ARCH)
+SWARM  = bebop2Swarm_$(ARCH)
+WEBCAM = OpenCVWithWebcam_$(ARCH)
 
 FLAGS += -std=c++14 -Wall -pedantic -O2 -Wno-deprecated-declarations
 LOC_INC = -I$(DISTDIR)/$(PREFIX)/include -I$(ARSDK3)/include
@@ -61,23 +61,25 @@ COMMON_SRC = \
 SWARM_SRC = src/Bebop2Swarm.cpp \
       src/Missions.cpp
 
-TX2_SRC = src/OpenCVWithTX2.cpp
+WEBCAM_SRC = src/OpenCVWithWebcam.cpp
 
-all: swarm tx2
+all: swarm webcam
 	
 swarm: directories deps
 	${CC} ${FLAGS} -o ${SWARM} ${SWARM_SRC} ${COMMON_SRC} ${SYS_INC} ${LOC_INC} ${LOC_LIB} ${SYS_LIB}
 
-tx2: directories deps
-	${CC} ${FLAGS} -o ${TX2} ${TX2_SRC} ${COMMON_SRC} ${SYS_INC} ${LOC_INC} ${LOC_LIB} ${SYS_LIB}
+webcam: directories deps
+	${CC} ${FLAGS} -o ${WEBCAM} ${WEBCAM_SRC} ${COMMON_SRC} ${SYS_INC} ${LOC_INC} ${LOC_LIB} ${SYS_LIB}
 	
 directories:
 	mkdir -p $(OUTPUT_DIRS)
 
+clean: mrproper
+
 mrproper:
-	-rm -rf $(DEPDIR)
 	-rm -rf $(DISTDIR)
 	-rm -rf $(SWARM)
+	-rm -rf $(WEBCAM)
 
 deps: directories $(DEP_BUILD_LIST)
 %.git:

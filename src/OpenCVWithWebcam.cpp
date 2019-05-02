@@ -1,5 +1,5 @@
 /*
- * OpenCVWithTX2.cpp
+ * OpenCVWithWebcam.cpp
  *
  *  Created on: Feb 1, 2019
  *      Author: slascos
@@ -29,6 +29,12 @@ bool shouldExit = false;     // flag used to indicate the program should exit.
 // Function prototypes
 std::thread launchDisplayThread();
 void openCVKeyCallbacks(const int key);
+
+// On the TX2, the onboard camera is /dev/video0 but doesn't work with OpenCV
+// If you plug in a USB webcam it will be /dev/video1
+// In the VM, the USB webcam would likely be /dev/video0
+//const int videoDeviceId = 0; // For non-TX2 environment
+const int videoDeviceId = 1; // for TX2
 
 
 int main(int argc, char **argv)
@@ -67,7 +73,7 @@ std::thread launchDisplayThread()
 
         // Create a video capture device
         cout << "Please wait, setting up capture device" << endl;
-        cv::VideoCapture videoCapture(0); // zero means USB camera device 0.
+        cv::VideoCapture videoCapture(videoDeviceId);
 
         // Check if camera opened successfully
         if(!videoCapture.isOpened()){
