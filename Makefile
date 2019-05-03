@@ -58,18 +58,19 @@ COMMON_SRC = \
       src/OpenCVProcessing.cpp
 
 SWARM_SRC = src/Bebop2Swarm.cpp \
-      src/Missions.cpp
+      src/Missions.cpp \
+      src/Tracking.cpp
 
 TX2_SRC = src/OpenCVWithTX2.cpp
 
 all: swarm tx2
-	
+
 swarm: directories deps
 	${CC} ${FLAGS} -o ${SWARM} ${SWARM_SRC} ${COMMON_SRC} ${SYS_INC} ${LOC_INC} ${LOC_LIB} ${SYS_LIB}
 
 tx2: directories deps
 	${CC} ${FLAGS} -o ${TX2} ${TX2_SRC} ${COMMON_SRC} ${SYS_INC} ${LOC_INC} ${LOC_LIB} ${SYS_LIB}
-	
+
 directories:
 	mkdir -p $(OUTPUT_DIRS)
 

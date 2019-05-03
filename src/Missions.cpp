@@ -11,6 +11,7 @@
 
 #include "wscDrone.h"
 #include "Missions.h"
+#include "Tracking.h"
 
 using namespace std;
 using namespace wscDrone;
@@ -333,6 +334,44 @@ void missionLookHorizontal(int droneId)
 }
 
 
+void missionReturnHome(int droneId)
+{
+    ControlPtr       control = g_drones[droneId]->getDroneController();
+    CameraControlPtr camera  = g_drones[droneId]->getCameraControl();
+    PilotPtr         pilot   = g_drones[droneId]->getPilot();
+    VideoDriverPtr   video   = g_drones[droneId]->getVideoDriver();
 
+    // store total translation and rotation
+    std::vector<float> homeVector = { 0, 0 };
+    float rotation = 0;
 
+    // move around and update heading
+    float dx = 8.0;
+    float dy = 1.0;
+    float angle = RIGHT_180_DEGREES;
 
+    pilot->moveRelativeMetresRestricted(dx, dy, 0.0);
+    translateHome(homeVector, rotation, dx, dy);
+    pilot->setHeading(angle);
+    rotateHome(rotation, angle);
+
+    dx = 2.0;
+    dy = 0.0;
+    angle = -35.0f;
+    pilot->moveRelativeMetresRestricted(dx, dy, 0.0);
+    translateHome(homeVector, rotation, dx, dy);
+
+    pilot->setHeading(angle);
+    rotateHome(rotation, angle);
+
+    pilot->moveRelativeMetresRestricted(dx, dy, 0.0);
+    translateHome(homeVector, rotation, dx, dy);
+
+    waitSeconds(WAIT_MED);
+
+    // Send the drone to the home location based on the given rotation and
+    // translation of the drone.
+    pilot->setHeading(-rotation);
+    pilot->moveRelativeMetresRestricted(-homeVector[0], -homeVector[1], 0.0);
+
+}

@@ -29,4 +29,6 @@ void missionLookHorizontal(int droneId);
 void missionDance();
 void missionDance2();
 
+void missionReturnHome(int droneId);
+
 #endif /* SRC_MISSIONS_H_ */
