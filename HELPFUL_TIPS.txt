@@ -1,0 +1,23 @@
+###################################################################################
+## KEEP AN EYE ON THIS FILE FOR ANY MORE TIPS OR UPDATES THROUGHOTU THE HACKATHON
+###################################################################################
+
+- The TX2 boots up in power saving mode. Run the max_clocks.sh script in the home folder to switch to performance mode.
+e.g.
+cd /home/hackathon
+./max_clocks.sh
+
+If you see the fan start spinning, it's now in performance mode.
+
+- Before going to the flight deck, put the check_version.sh and ping* scripts in the same folder as your application to get through preflight check faster.
+
+- You do not need to demonstrate manual controls (cursor keys) during preflight. Just confirm 't' is takeoff, SPACEBAR lands. Use 'g' to start your mission.
+
+- Please do not connect to the Hack2019A or Hack2019B networks unless you are on testing on the flight deck. Running your application while connected may cause the drones to start flying!!!
+
+- Please delete all your videos and photos from all your drones after your flight so it is clean for the next team. You can install Filezilla (an ftp program) to connect to the drones, browse the the following directory and delete the files.
+
+You can install Filezilla on your TX2 through the Ubuntu Software app.
+
+
+

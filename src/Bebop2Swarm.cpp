@@ -243,6 +243,7 @@ case 112: // P - Take a picture with the selected drone, the download on a separ
             string ipAddress = g_drones[droneUnderManualControl]->getIpAddress();
             ostringstream command;
             command << "wget -r --no-parent -nc -A '*.dng,*.jpg' -P ./drone_" <<  droneUnderManualControl;
+            // command << "wget -r --no-parent --delete-after -nc -A '*.dng,*.jpg' -P ./drone_" <<  droneUnderManualControl; // Try using this version to autodelete files after download! (--delete-after)
             command << " -nd ftp://" << ipAddress << "/internal_000/Bebop_2/media/";
             cout << "Sending command: " << command.str() << endl;
             int ret = system(command.str().c_str()); // Send the command to a shell to execute
